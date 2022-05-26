@@ -18,23 +18,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class KafkaController {
     
-    //private final Producer<Integer,String> producer;
-    private final KafkaTemplate<Integer,String> producer;
+    final KafkaProducer producer;
     
     @Autowired
-    public KafkaController(final KafkaTemplate<Integer,String> producer){
+    public KafkaController(final KafkaProducer producer){
         this.producer = producer;
     }
 
     @PostMapping("topics/{topic}")
-    public ResponseEntity<?> sendMessageToTopic(@RequestBody BasicTopicMessage message, @PathVariable String topic) throws InterruptedException, ExecutionException{
-        final ProducerRecord<Integer,String> pRecord = new ProducerRecord<>(topic, message.getId(), message.getContent());
-        producer.send(pRecord);
-        //producer.send(topic, message.getId(), message.getContent());
+    public ResponseEntity<?> sendMessageToTopic(@RequestBody BasicTopicMessage message, @PathVariable String topic) {
+        producer.send(topic, message);
 
         return new ResponseEntity<>(
             message,
-            HttpStatus.OK
+            HttpStatus.CREATED
         );
     }
 }
