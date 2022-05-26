@@ -1,15 +1,9 @@
 package com.gapinc.seri.restservice;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,8 +20,17 @@ public class KafkaController {
     }
 
     @PostMapping("topics/{topic}")
-    public ResponseEntity<?> sendMessageToTopic(@RequestBody BasicTopicMessage message, @PathVariable String topic) {
-        producer.send(topic, message);
+    public ResponseEntity<?> sendMessageToTopic(@RequestBody BasicTopicMessage message, @PathVariable String topic) throws InterruptedException, ExecutionException{
+        try {
+            producer.send(topic, message);
+        } catch (InterruptedException | ExecutionException e) {
+            String err = String.format("Failed to send message to %s%n", topic);
+            System.out.print(err + e.getStackTrace());
+            return new ResponseEntity<>(
+                err,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
 
         return new ResponseEntity<>(
             message,

@@ -1,13 +1,17 @@
 package com.gapinc.seri.restservice;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -19,11 +23,18 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
@@ -49,6 +60,12 @@ public class KafkaControllerTest {
     private KafkaMessageListenerContainer<Integer, String> container;
     private BlockingQueue<ConsumerRecord<Integer, String>> records;
 
+    @InjectMocks
+    KafkaController kafkaController;
+
+    @Mock
+    KafkaProducer kafkaProducer;
+
     @Autowired
     public KafkaControllerTest(MockMvc mvc,ObjectMapper objectMapper,EmbeddedKafkaBroker embeddedKafkaBroker, @Value("${test.topic}") String topic){
         this.mvc = mvc;
@@ -59,6 +76,7 @@ public class KafkaControllerTest {
 
     @BeforeAll
     void setUp() {
+
         DefaultKafkaConsumerFactory<Integer, String> consumerFactory = new DefaultKafkaConsumerFactory<>(getConsumerProperties());
         ContainerProperties containerProperties = new ContainerProperties(topic);
         container = new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
@@ -104,5 +122,14 @@ public class KafkaControllerTest {
         assertNotNull(consumedMessage);
         assertEquals(1, consumedMessage.key());
         assertEquals("This is a test.", consumedMessage.value());
+    }
+
+    @Test
+    public void testProduceFailure() throws JsonProcessingException, Exception {
+        BasicTopicMessage message = new BasicTopicMessage(1, "This is a test.");
+        when(kafkaProducer.send(topic, message)).thenThrow(new InterruptedException("Test Exception"));
+        ResponseEntity<?> response = kafkaController.sendMessageToTopic(message, topic);
+
+        assertEquals(response.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
