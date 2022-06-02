@@ -17,7 +17,7 @@ dependencies {
 	testImplementation ('org.springframework.boot:spring-boot-starter-test')
 	implementation ('org.springframework.kafka:spring-kafka')
 	testImplementation ('org.springframework.kafka:spring-kafka-test')
-	implementation ('xml-apis:xml-apis:2.0.2')
+	implementation ('xml-apis:xml-apis:1.4.01')
 }
 
 tasks.named('test') {
