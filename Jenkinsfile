@@ -1,15 +1,22 @@
 //Jenkinsfile (Declarative Pipeline)
 pipeline {
-    agent any
+    agent {
+        docker {
+            registryUrl 'https://gapinc-docker-repo.jfrog.io'
+            registryCredentialsId 'pt-services-integration-artifactory-token'
+            image 'gradle:7.3.3-jdk11'
+            reuseNode true
+        }
+    }
 
     stages {
         stage('Build') {
             steps {
                 echo 'Building with gradle..'
-                withGradle(){
-                    sh './gradlew -v'
-                    sh './gradlew build'
-                }
+                sh('''
+                    ./gradlew -v
+                    ./gradlew clean build
+                ''')
             }
         }
         stage('Test') {
