@@ -1,11 +1,23 @@
-# java-springboot-rest-template
-Template for starting a Restful, Java, springboot application. 
-Uses gradle as a build tool and has a simple Dockerfile that just runs the JAR file.
+# Kafka-on-kube-ms
+WIP - Restful app for connecting to kafka through endpoints.
+
+Included now : 
+    - Producer
 ## Setup
-Click on "Use this template".
-Open a shell in root of your new repo, then run 
+1. Clone repo
+2. open src/main/resources/application.yml
+    - modify spring.kafka.bootstrap-servers with the exposed server:port of your Kafka cluster
+    ```yaml
+    spring:
+        kafka:
+            bootstrap-servers: localhost:30080,172.17.0.5:9092
+    ```
+    - The servers listed are examples of : 
+        - an external connection (app outside of kube cluster that kafka is on, connecting to 30080, an exposed nodeport. but we connect to localhost:30080 because that's a port exposed my minikube)
+        - an internal connection (app deployed in same kubernetes cluster as Kafka, the endpoint 172.17.0.5:9092 is exposed by an internal kube service) 
+Open a shell in root of the repo, then run 
 ```bash
-./gradlew build
+./gradlew build #this will run the unit tests as well
 ```
 ## Run
 ```bash
@@ -22,94 +34,31 @@ or
 ```
 ## Tests
 ```bash
-./gradlew test
+./gradlew test #tests do not rely on an active Kafka cluster
 ```
 # REST API
 Use another terminal and run curl requests at http://localhost:8080
-## Get List
+## Post to Topic
+Currently not set up to create topic if it doesn't exist, topic needs to exist in Kafka cluster the app connects to
 #### Request
-'GET /greetings'
+'POST /topics/{topic}'
 ```bash
-curl -i localhost:8080/greetings
-```
-#### Response
-```bash
-HTTP/1.1 200 
-Content-Type: application/hal+json
-Transfer-Encoding: chunked
-Date: Thu, 12 May 2022 22:35:38 GMT
-
-{"_embedded":{"greetingList":[{"id":3,"content":"Howdy, World!","_links":{"self":{"href":"http://localhost:8080/greetings/3?name=World"},"greetings":{"href":"http://localhost:8080/greetings?name=World"}}},{"id":2,"content":"Hola, World!","_links":{"self":{"href":"http://localhost:8080/greetings/2?name=World"},"greetings":{"href":"http://localhost:8080/greetings?name=World"}}},{"id":1,"content":"Hello, World!","_links":{"self":{"href":"http://localhost:8080/greetings/1?name=World"},"greetings":{"href":"http://localhost:8080/greetings?name=World"}}}]},"_links":{"self":{"href":"http://localhost:8080/greetings?name=World"}}}
-```
-## Get single item 
-#### Request
-'GET /greetings/id'
-```bash
-curl -i localhost:8080/greetings/1
-```
-#### Response
-```bash
-HTTP/1.1 200 
-Content-Type: application/hal+json
-Transfer-Encoding: chunked
-Date: Thu, 12 May 2022 22:41:33 GMT
-
-{"id":1,"content":"Hello, World!","_links":{"self":{"href":"http://localhost:8080/greetings/1?name=World"},"greetings":{"href":"http://localhost:8080/greetings?name=World"}}}
-```
-## Create new greeting 
-#### Request
-'POST /greetings/'
-```bash
-curl -i POST localhost:8080/greetings -H 'Content-Type:application/json' -d '{"id": 4, "content": "Well hello there!"}'
+curl -i -X POST localhost:8080/topics/my-topic -H 'Content-Type:application/hal+json' -d '{"id":1,"content":"hello"}'
 ```
 #### Response
 ```bash
 HTTP/1.1 201 
-Location: http://localhost:8080/greetings/4
 Content-Type: application/hal+json
 Transfer-Encoding: chunked
-Date: Thu, 12 May 2022 22:40:11 GMT
+Date: Wed, 01 Jun 2022 16:46:23 GMT
 
-{"id":4,"content":"Well hello there!","_links":{"self":{"href":"http://localhost:8080/greetings/4{?name}","templated":true},"greetings":{"href":"http://localhost:8080/greetings{?name}","templated":true}}}
+{"id":1,"content":"!!!!"}
 ```
-## Patch item 
-#### Request
-'PATCH /greetings/id/content'
-```bash
-curl -i -X PATCH localhost:8080/greetings/1/boo%20bop
-```
-#### Response
-```bash
-HTTP/1.1 200 
-Content-Type: application/hal+json
-Transfer-Encoding: chunked
-Date: Thu, 12 May 2022 22:43:16 GMT
+## Todo
 
-{"id":1,"content":"boo bop","_links":{"self":{"href":"http://localhost:8080/greetings/1{?name}","templated":true},"greetings":{"href":"http://localhost:8080/greetings{?name}","templated":true}}}
-```
-## Delete item 
-#### Request
-'DELETE /greetings/id'
-```bash
-curl -i -X DELETE localhost:8080/greetings/1
-```
-#### Response
-```bash
-HTTP/1.1 204 
-Date: Thu, 12 May 2022 22:45:42 GMT
-```
-## Get missing item 
-#### Request
-'GET /greetings/id'
-```bash
-curl -i localhost:8080/greetings/5
-```
-#### Response
-```bash
-HTTP/1.1 404 
-Content-Type: application/json
-Transfer-Encoding: chunked
-Date: Thu, 12 May 2022 22:46:20 GMT
-
-{"timestamp":"2022-05-12T22:46:20.169+00:00","status":404,"error":"Not Found","path":"/greetings/5"}
-```
+- [] Add consumer
+- [] Add logging
+- [] build deployment process
+- [] create build/test pipeline
+- [] Add GET for listing topics
+- [] Add hateos links
