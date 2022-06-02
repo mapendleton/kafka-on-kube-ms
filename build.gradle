@@ -2,7 +2,6 @@ plugins {
 	id 'org.springframework.boot' version '2.6.7'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
-	id 'pmd'
 }
 
 group = 'com.gapinc.seri'
@@ -18,12 +17,10 @@ dependencies {
 	testImplementation ('org.springframework.boot:spring-boot-starter-test')
 	implementation ('org.springframework.kafka:spring-kafka')
 	testImplementation ('org.springframework.kafka:spring-kafka-test')
+	implementation ('xml-apis:xml-apis:2.0.2')
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
 
-pmd {
-	toolVersion = '6.21.0'
-}
