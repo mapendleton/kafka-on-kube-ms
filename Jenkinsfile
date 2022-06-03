@@ -1,12 +1,13 @@
 //Jenkinsfile (Declarative Pipeline)
 pipeline {
     agent {
-        docker {
-            registryUrl 'https://gapinc-docker-repo.jfrog.io'
-            registryCredentialsId 'pt-services-integration-artifactory-token'
-            image 'gradle:7.3.3-jdk11'
-            reuseNode true
-        }
+        docker { image 'node:16.13.1-alpine' }
+        // docker {
+        //     registryUrl 'https://gapinc-docker-repo.jfrog.io'
+        //     registryCredentialsId 'pt-services-integration-artifactory-token'
+        //     image 'gradle:7.3.3-jdk11'
+        //     reuseNode true
+        // }
     }
 
     stages {
