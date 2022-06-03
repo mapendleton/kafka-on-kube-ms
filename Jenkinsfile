@@ -1,7 +1,7 @@
 //Jenkinsfile (Declarative Pipeline)
 pipeline {
     agent {
-        docker { image 'node:16.13.1-alpine' }
+        docker { label 'pipes-docker-agent' }
         // docker {
         //     registryUrl 'https://gapinc-docker-repo.jfrog.io'
         //     registryCredentialsId 'pt-services-integration-artifactory-token'
