@@ -1,14 +1,15 @@
 //Jenkinsfile (Declarative Pipeline)
 pipeline {
-    agent {
-        docker { label 'pipes-docker-agent' }
-        // docker {
-        //     registryUrl 'https://gapinc-docker-repo.jfrog.io'
-        //     registryCredentialsId 'pt-services-integration-artifactory-token'
-        //     image 'gradle:7.3.3-jdk11'
-        //     reuseNode true
-        // }
-    }
+    agent { label 'pipes-docker-agent' }
+    // agent {
+    //     docker { label 'pipes-docker-agent' }
+    //     // docker {
+    //     //     registryUrl 'https://gapinc-docker-repo.jfrog.io'
+    //     //     registryCredentialsId 'pt-services-integration-artifactory-token'
+    //     //     image 'gradle:7.3.3-jdk11'
+    //     //     reuseNode true
+    //     // }
+    // }
 
     stages {
         stage('Build') {
