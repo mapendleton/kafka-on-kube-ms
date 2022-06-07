@@ -3,7 +3,7 @@ pipeline {
     agent { label 'pipes-docker-agent' }
 
     stages {
-        stage('Build/Test') {
+        stage('gradle:7.3.3-jdk11 agent stages'){
             agent {
                 docker {
                     image 'gradle:7.3.3-jdk11'
@@ -12,24 +12,30 @@ pipeline {
                     reuseNode true
                 }
             }
-            steps {
-                echo 'Building and Testing with gradle...'
-                sh('''
-                    ./gradlew -v
-                    ./gradlew clean build
-                ''')
-            }
-        }
-        stage('Scan using Gradle') {
-            steps {
-                echo 'Running sonar scan...'
-                withSonarQubeEnv(installationName: 'gap-sonar'){
-                    sh('''
-                        ./gradlew sonarqube
-                    ''')
+            stages {
+                stage('Build/Test') {
+
+                    steps {
+                        echo 'Building and Testing with gradle...'
+                        sh('''
+                            ./gradlew -v
+                            ./gradlew clean build
+                        ''')
+                    }
+                }
+                stage('Scan using Gradle') {
+                    steps {
+                        echo 'Running sonar scan...'
+                        withSonarQubeEnv(installationName: 'gap-sonar'){
+                            sh('''
+                                ./gradlew sonarqube
+                            ''')
+                        }
+                    }
                 }
             }
         }
+        
         stage('Deploy') {
             steps {
                 echo 'Deploy not implemented yet. SERI-61'
