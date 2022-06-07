@@ -1,6 +1,8 @@
-package com.gapinc.seri.restservice;
+package com.gapinc.seri.restservice.service;
 
 import java.util.concurrent.ExecutionException;
+
+import com.gapinc.seri.restservice.model.BasicTopicMessage;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;

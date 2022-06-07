@@ -1,21 +1,21 @@
-package com.gapinc.seri.restservice;
-
-import org.springframework.hateoas.RepresentationModel;
+package com.gapinc.seri.restservice.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Greeting extends RepresentationModel<Greeting> {
+import org.springframework.hateoas.RepresentationModel;
+
+public class BasicTopicMessage extends RepresentationModel<BasicTopicMessage> {
     private final Integer id;
 	private String content;
-
+    
     @JsonCreator
-	public Greeting(@JsonProperty("id") Integer id, @JsonProperty("content") String content) {
+	public BasicTopicMessage(@JsonProperty("id") Integer id, @JsonProperty("content") String content) {
 		this.id = id;
 		this.content = content;
 	}
 
-	public Integer getId() {
+    public Integer getId() {
 		return id;
 	}
 
