@@ -18,7 +18,7 @@ spec:
         app: kafkarestservice
     spec:
       containers:
-      - image: restservice:0.0.1-SNAPSHOT
+      - image: kafka-ms:0.0.1
         imagePullPolicy: Never
         name: restservice
         resources: {}
