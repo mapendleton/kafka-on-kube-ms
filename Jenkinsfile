@@ -2,33 +2,37 @@
 pipeline {
     agent { label 'pipes-docker-agent' }
 
-
     stages {
-        stage('Build') {
+        stage('Build/Test') {
             agent {
                 docker {
+                    image 'gradle:7.3.3-jdk11'
                     registryUrl 'https://gapinc-docker-repo.jfrog.io'
                     registryCredentialsId 'pt-services-integration-artifactory-token'
-                    image 'gradle:7.3.3-jdk11'
                     reuseNode true
                 }
             }
             steps {
-                echo 'Building with gradle..'
+                echo 'Building and Testing with gradle...'
                 sh('''
                     ./gradlew -v
                     ./gradlew clean build
                 ''')
             }
         }
-        stage('Test') {
+        stage('Scan using Gradle') {
             steps {
-                echo 'Testing..'
+                echo 'Running sonar scan...'
+                withSonarQubeEnv(installationName: 'gap-sonar'){
+                    sh('''
+                        ./gradlew sonarqube
+                    ''')
+                }
             }
         }
         stage('Deploy') {
             steps {
-                echo 'Not implemented yet. SERI-61'
+                echo 'Deploy not implemented yet. SERI-61'
             }
         }
     }

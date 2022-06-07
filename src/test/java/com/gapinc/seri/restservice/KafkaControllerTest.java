@@ -2,6 +2,9 @@ package com.gapinc.seri.restservice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gapinc.seri.restservice.controllers.KafkaController;
+import com.gapinc.seri.restservice.service.KafkaProducer;
+import com.gapinc.seri.restservice.model.BasicTopicMessage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -134,10 +137,4 @@ public class KafkaControllerTest {
             assertEquals("This is a test.", consumedMessage.value());
         }
     }
-
-
-
-
-
-
 }
