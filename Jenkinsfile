@@ -28,14 +28,15 @@ pipeline {
                         echo 'Running sonar scan...'
                         withSonarQubeEnv(installationName: 'gap-sonar'){
                             sh('''
-                                ./gradlew sonarqube
+                                ./gradlew sonarqube \
+                                -Dsonar.projectName='kafka-on-kube-ms'
                             ''')
                         }
                     }
                 }
             }
         }
-        
+
         stage('Deploy') {
             steps {
                 echo 'Deploy not implemented yet. SERI-61'
