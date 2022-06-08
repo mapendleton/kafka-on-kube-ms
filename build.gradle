@@ -3,6 +3,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 	id "org.sonarqube" version "3.3"
+	id 'jacoco'
 }
 
 group = 'com.gapinc.seri'
@@ -23,5 +24,13 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+
+	jacoco {
+		destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
+		classDumpDir = file("$buildDir/jacoco/classpathdumps")
+	}
 }
 
+tasks.named("jacocoTestReport") {
+	getExecutionData().setFrom(fileTree(buildDir).include("/jacoco/jacocoTest.exec"))
+}

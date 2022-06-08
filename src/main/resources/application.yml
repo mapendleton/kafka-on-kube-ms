@@ -1,6 +1,6 @@
 spring:
    kafka:
-      bootstrap-servers: localhost:30080,172.17.0.5:9092
+      bootstrap-servers: localhost:30080,172.17.0.6:9092
       producer:
          acks: all
          key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
