@@ -31,6 +31,12 @@ tasks.named('test') {
 	}
 }
 
-tasks.named("jacocoTestReport") {
+jacocoTestReport {
+	reports {
+		html.enabled false
+		csv.enabled false
+		xml.enabled true
+	}
+
 	getExecutionData().setFrom(fileTree(buildDir).include("/jacoco/jacocoTest.exec"))
 }
