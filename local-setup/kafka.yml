@@ -16,7 +16,7 @@ spec:
       containers:
         - env:
             - name: KAFKA_CFG_ADVERTISED_LISTENERS
-              value: INTERNAL://kafkaservice:9092,EXTERNAL://localhost:30080
+              value: INTERNAL://kafkaservice:9092,EXTERNAL://kafkaservice:9092
             - name: KAFKA_CFG_LISTENERS
               value: INTERNAL://:9092,EXTERNAL://:9093
             - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP

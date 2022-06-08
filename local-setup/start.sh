@@ -42,6 +42,9 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     # run app in kubernetes
     kubectl apply -f deployment.yaml
 
+    # forward port to localhost
+    sleep 10
+    kubectl port-forward service/kafkarestservice 8084:8084 &
 else
   echo "setup steps not performed...or not configured for OS..."
   exit 1
