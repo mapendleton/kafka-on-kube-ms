@@ -3,18 +3,21 @@ WIP - Restful app for connecting to kafka through endpoints.
 
 Included now : 
     - Producer
+
+In order to run locally, you will need:
+MAC OS: [colima] (https://github.com/abiosoft/colima), [minikube] (https://minikube.sigs.k8s.io/docs/start/)  
+WIN: TBD 
+  
+
 ## Setup
+These are the steps to run kafka and the service in kubernetes, locally.  
 1. Clone repo
-2. open src/main/resources/application.yml
-    - modify spring.kafka.bootstrap-servers with the exposed server:port of your Kafka cluster
-    ```yaml
-    spring:
-        kafka:
-            bootstrap-servers: localhost:30080,172.17.0.5:9092
-    ```
-    - The servers listed are examples of : 
-        - an external connection (app outside of kube cluster that kafka is on, connecting to 30080, an exposed nodeport. but we connect to localhost:30080 because that's a port exposed my minikube)
-        - an internal connection (app deployed in same kubernetes cluster as Kafka, the endpoint 172.17.0.5:9092 is exposed by an internal kube service) 
+2. Run ``` ./local-setup/start.sh```  
+
+You should now be able to hit the available endpoints on localhost. i.e. localhost:8084/health should return "OK"
+
+----
+You can also build and run locally:  
 Open a shell in root of the repo, then run 
 ```bash
 ./gradlew build #this will run the unit tests as well

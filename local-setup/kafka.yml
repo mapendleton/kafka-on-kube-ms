@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafkaservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: kafkaservice
+  template:
+    metadata:
+      labels:
+        name: kafkaservice
+    spec:
+      hostname: kafkaservice
+      containers:
+        - env:
+            - name: KAFKA_CFG_ADVERTISED_LISTENERS
+              value: INTERNAL://kafkaservice:9092,EXTERNAL://kafka-svc-external:30080
+            - name: KAFKA_CFG_LISTENERS
+              value: INTERNAL://:9092,EXTERNAL://:9093
+            - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+              value: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: zookeeper:2181
+            - name: ALLOW_PLAINTEXT_LISTENER
+              value: "yes"
+            - name: KAFKA_CFG_INTER_BROKER_LISTENER_NAME
+              value: INTERNAL
+          name: kafkaservice
+          image: bitnami/kafka
+          imagePullPolicy: Always
+          ports:
+            - name: port9092
+              containerPort: 9092
+            - name: port9093
+              containerPort: 9093
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafkaservice
+  labels:
+    name: kafkaservice
+spec:
+  ports:
+    - name: port9092
+      port: 9092
+      protocol: TCP
+      targetPort: 9092
+  selector:
+    name: kafkaservice
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-svc-external
+  labels:
+    app: kafka-svc-external
+spec:
+  selector:
+    name: kafkaservice
+  ports:
+    - name: port9093
+      port: 9093
+      protocol: TCP
+      nodePort: 30080
+  type: NodePort

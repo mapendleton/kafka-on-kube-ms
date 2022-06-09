@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zookeeper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: zookeeper
+  template:
+    metadata:
+      labels:
+        name: zookeeper
+    spec:
+      containers:
+        - env:
+            - name: ZOOKEEPER_ID
+              value: "1"
+            - name: ZOOKEEPER_SERVER_1
+              value: zookeeper
+            - name: ALLOW_ANONYMOUS_LOGIN
+              value: 'yes'
+          name: zookeeper
+          image: bitnami/zookeeper
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 2181
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+  labels:
+    name: zookeeper
+spec:
+  ports:
+    - name: client
+      port: 2181
+      protocol: TCP
+    - name: follower
+      port: 2888
+      protocol: TCP
+    - name: leader
+      port: 3888
+      protocol: TCP
+  selector:
+    name: zookeeper

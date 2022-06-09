@@ -18,27 +18,25 @@ spec:
         app: kafkarestservice
     spec:
       containers:
-      - image: restservice:0.0.1-SNAPSHOT
+      - image: kafka-ms:0.0.1
         imagePullPolicy: Never
-        name: restservice
+        name: kafkarestservice
         resources: {}
+        ports:
+          - containerPort: 8084
+            name: kafkaservport
 status: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  creationTimestamp: null
-  labels:
-    app: kafkarestservice
   name: kafkarestservice
 spec:
-  ports:
-  - name: 8080-8080
-    port: 8080
-    protocol: TCP
-    targetPort: 8080
+  type: NodePort
   selector:
     app: kafkarestservice
-  type: ClusterIP
-status:
-  loadBalancer: {}
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8084
+      targetPort: kafkaservport
