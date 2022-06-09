@@ -29,7 +29,7 @@ pipeline {
                         withSonarQubeEnv(installationName: 'gap-sonar'){
                             sh('''
                                 ./gradlew sonarqube \
-                                -Dsonar.projectName='kafka-on-kube-ms'
+                                -Dsonar.qualitygate.wait=true \
                             ''')
                         }
                     }
