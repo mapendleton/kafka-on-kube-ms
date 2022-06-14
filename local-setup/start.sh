@@ -10,6 +10,7 @@ function run_kafka_on_kube () {
 }
 
 function build_and_containerize_app() {
+      eval $(minikube docker-env)
       ./gradlew build
       docker build . -f Dockerfile --tag kafka-ms:0.0.1
       sleep 60

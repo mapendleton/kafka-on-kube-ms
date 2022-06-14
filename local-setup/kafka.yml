@@ -28,7 +28,7 @@ spec:
             - name: KAFKA_CFG_INTER_BROKER_LISTENER_NAME
               value: INTERNAL
           name: kafkaservice
-          image: bitnami/kafka
+          image: bitnami/kafka:latest
           imagePullPolicy: Always
           ports:
             - name: port9092
