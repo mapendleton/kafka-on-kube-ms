@@ -1,6 +1,6 @@
 spring:
    kafka:
-      bootstrap-servers: kafkaservice:9092,kafka-svc-external:30080,kafka-svc-external:9093
+      bootstrap-servers: kafkaservice:9092
       producer:
          acks: all
          key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
