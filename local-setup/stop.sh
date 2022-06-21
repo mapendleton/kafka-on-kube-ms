@@ -1,5 +1,5 @@
 #!/bin/sh
+. ./Bash-Libs/Setup-Docker-Minikube-Lib.sh
 
-minikube stop
 minikube delete
 colima stop

@@ -5,8 +5,6 @@ function main() {
 
     getEnv 
     startMinikube
-    echo $DOCKER_HOST
-    echo $DOCKER_CERT_PATH
     deployKafka
     build_and_containerize_app
     kubectl port-forward service/kafkarestservice 8084:8084 &
