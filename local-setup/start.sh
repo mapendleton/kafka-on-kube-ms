@@ -25,7 +25,7 @@ function build_and_containerize_app() {
     kubectl apply -f deployment.yaml
 
     waitPrompt "kubectl get service/kafkarestservice" "kafkarestservice service running"
-    waitPrompt "kubectl get pod/kafkarestservice-6685897dbf-wh5jd" "kafkarestservice pod running"
+    waitPrompt "kubectl get pods -l app=kafkarestservice" "kafkarestservice pod running"
 }
 
 main
