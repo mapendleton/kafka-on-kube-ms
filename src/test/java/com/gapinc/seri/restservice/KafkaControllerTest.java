@@ -53,7 +53,7 @@ public class KafkaControllerTest {
 
     final MockMvc mvc;
     final ObjectMapper objectMapper;
-    final EmbeddedKafkaBroker embeddedKafkaBroker;
+    final EmbeddedKafkaBroker embeddedKafkaBroker = new EmbeddedKafkaBroker();
     final String topic;
 
     private KafkaMessageListenerContainer<Integer, String> container;

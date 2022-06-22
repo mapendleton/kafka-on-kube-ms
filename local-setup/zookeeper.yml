@@ -20,9 +20,11 @@ spec:
               value: zookeeper
             - name: ALLOW_ANONYMOUS_LOGIN
               value: 'yes'
+            - name: ZOOKEEPER_CLIENT_PORT
+              value: '2181'
           name: zookeeper
-          image: bitnami/zookeeper
-          imagePullPolicy: Always
+          image: docker.io/confluentinc/cp-zookeeper:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 2181
 ---

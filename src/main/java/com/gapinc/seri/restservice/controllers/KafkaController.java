@@ -8,6 +8,9 @@ import com.gapinc.seri.restservice.service.KafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,5 +43,13 @@ public class KafkaController {
             message,
             HttpStatus.CREATED
         );
+    }
+
+    @MessageMapping("/sendMessage")
+    @SendTo("/topic/all")
+    public String broadcastGroupMessage(@Payload String message){
+        // sending this message to all subscribers
+        System.out.print("broadcasting group message..." + message);
+        return message;
     }
 }

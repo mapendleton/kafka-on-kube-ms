@@ -3,6 +3,7 @@
 container_name="minikube";
 
 function run_kafka_on_kube () {
+      eval $(minikube docker-env)
       kubectl apply -f ./local-setup/zookeeper.yml
       sleep 60
       kubectl apply -f ./local-setup/kafka.yml
@@ -11,7 +12,7 @@ function run_kafka_on_kube () {
 
 function build_and_containerize_app() {
       eval $(minikube docker-env)
-      ./gradlew build
+      ./gradlew -x test build
       docker build . -f Dockerfile --tag kafka-ms:0.0.1
       sleep 60
 
