@@ -20,6 +20,13 @@ dependencies {
 	implementation ('org.springframework.kafka:spring-kafka')
 	testImplementation ('org.springframework.kafka:spring-kafka-test')
 	implementation ('xml-apis:xml-apis:1.4.01')
+	implementation ('org.springframework.boot:spring-boot-starter-log4j2')
+}
+
+configurations {
+	all{
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+	}
 }
 
 jacoco {

@@ -28,6 +28,8 @@ import org.junit.jupiter.api.TestInstance;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -58,6 +60,7 @@ public class KafkaControllerTest {
 
     private KafkaMessageListenerContainer<Integer, String> container;
     private BlockingQueue<ConsumerRecord<Integer, String>> records;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @InjectMocks
     KafkaController kafkaController;
@@ -79,8 +82,8 @@ public class KafkaControllerTest {
         when(kafkaProducer.send(topic, message)).thenThrow(new InterruptedException("Test Exception"));
         ResponseEntity<?> response = kafkaController.sendMessageToTopic(message, topic);
 
-        System.out.print("actual: " + response.getStatusCode().name());
-        System.out.print("\nexpected: " + HttpStatus.INTERNAL_SERVER_ERROR);
+        logger.info("actual: " + response.getStatusCode().name());
+        logger.info("\nexpected: " + HttpStatus.INTERNAL_SERVER_ERROR);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
