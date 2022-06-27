@@ -6,8 +6,12 @@ function main() {
     getEnv 
     startMinikube
     deployKafka
-    build_and_containerize_app
-    kubectl port-forward service/kafkarestservice 8084:8084 &
+    if [[ $1 == "--local" || $1 == "-l" ]]; then
+        ./gradlew bootRun
+    else
+        build_and_containerize_app
+        kubectl port-forward service/kafkarestservice 8084:8084 &
+    fi
     echo "Done..."
 }
 
@@ -28,4 +32,8 @@ function build_and_containerize_app() {
     waitPrompt "kubectl get pods -l app=kafkarestservice" "kafkarestservice pod running"
 }
 
-main
+function build_and_run_local() {
+    ./gradlew bootRun
+}
+
+main $@
