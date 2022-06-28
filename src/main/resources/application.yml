@@ -1,11 +1,15 @@
 spring:
    kafka:
-      bootstrap-servers: kafkaservice:9092
+      bootstrap-servers: kafkaservice:9092,localhost:30080
       producer:
          acks: all
          key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
          value-serializer: org.apache.kafka.common.serialization.StringSerializer
-test:
-  topic: embedded-test-topic
+      consumer:
+         group-id: group-id
+         auto-offset-reset: earliest
+         key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+         value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      topic: my-topic
 server:
    port : 8084

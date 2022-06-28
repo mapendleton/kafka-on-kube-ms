@@ -1,10 +1,10 @@
 package com.gapinc.seri.restservice.controllers;
 
 import java.util.concurrent.ExecutionException;
-
 import com.gapinc.seri.restservice.model.BasicTopicMessage;
 import com.gapinc.seri.restservice.service.KafkaProducer;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class KafkaController {
     
     final KafkaProducer producer;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     @Autowired
     public KafkaController(final KafkaProducer producer){
@@ -29,7 +30,7 @@ public class KafkaController {
             producer.send(topic, message);
         } catch (InterruptedException | ExecutionException e) {
             String err = String.format("Failed to send message to %s%n", topic);
-            System.out.print(err + e.getStackTrace());
+            logger.error(err + e.getStackTrace());
             return new ResponseEntity<>(
                 err,
                 HttpStatus.INTERNAL_SERVER_ERROR
