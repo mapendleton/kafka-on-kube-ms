@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
 function main() {
-    . ./Bash-Libs/Setup-Docker-Minikube-Lib.sh
+    . ./bash-libs/Setup-Docker-Minikube-Lib.sh
 
-    getEnv 
-    startMinikube
-    deployKafka
+    get_env 
+    start_minikube
+    deploy_kafka
     build_and_containerize_app
     kubectl port-forward service/kafkarestservice 8084:8084 &
     echo "Done..."
 }
 
-function deployKafka () {
+function deploy_kafka () {
     echo "deploying zookeeper..."
     kubectl apply -f ./local-setup/zookeeper.yml
     echo "deploying kafka..."
@@ -24,8 +24,8 @@ function build_and_containerize_app() {
     # run app in kubernetes
     kubectl apply -f deployment.yaml
 
-    waitPrompt "kubectl get service/kafkarestservice" "kafkarestservice service running"
-    waitPrompt "kubectl get pods -l app=kafkarestservice" "kafkarestservice pod running"
+    wait_prompt "kubectl get service/kafkarestservice" "kafkarestservice service running"
+    wait_prompt "kubectl get pods -l app=kafkarestservice" "kafkarestservice pod running"
 }
 
 main
