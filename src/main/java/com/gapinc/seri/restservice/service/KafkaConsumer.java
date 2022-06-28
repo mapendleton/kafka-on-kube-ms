@@ -13,7 +13,6 @@ public class KafkaConsumer {
     
     @KafkaListener(topics = "${spring.kafka.topic}", id = "kafkaListener")
     public void consume(ConsumerRecord<Integer,String> message){
-        //logger.info("Message Consumed: {}",message);
         logger.info("Message consumed on topic: {},Key: {}, Message: {}", message.topic(),message.key(), message.value());
     }
 }

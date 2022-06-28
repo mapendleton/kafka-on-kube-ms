@@ -43,7 +43,6 @@ public class KafkaControllerTest {
 
     final MockMvc mvc;
     final ObjectMapper objectMapper;
-    final EmbeddedKafkaBroker embeddedKafkaBroker;
     final String topic;
     final KafkaListenerEndpointRegistry registry;
     final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -56,20 +55,18 @@ public class KafkaControllerTest {
     KafkaProducer kafkaProducer;
 
     @Autowired
-    public KafkaControllerTest(MockMvc mvc,ObjectMapper objectMapper,EmbeddedKafkaBroker embeddedKafkaBroker, KafkaListenerEndpointRegistry registry, @Value("${spring.kafka.topic}") String topic){
+    public KafkaControllerTest(MockMvc mvc,ObjectMapper objectMapper,KafkaListenerEndpointRegistry registry, @Value("${spring.kafka.topic}") String topic){
         this.mvc = mvc;
         this.objectMapper = objectMapper;
-        this.embeddedKafkaBroker = embeddedKafkaBroker;
         this.topic = topic;
         this.registry = registry;
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testProduce_Consume() throws Exception {
-
-        ConcurrentMessageListenerContainer<?, ?> container = (ConcurrentMessageListenerContainer<?, ?>) registry.getListenerContainer("kafkaListener");
+        ConcurrentMessageListenerContainer<Integer, String> container = (ConcurrentMessageListenerContainer<Integer, String>) registry.getListenerContainer("kafkaListener");
         container.stop();
-        @SuppressWarnings("unchecked")
         AcknowledgingConsumerAwareMessageListener<Integer,String> messageListener = (AcknowledgingConsumerAwareMessageListener<Integer, String>) container.getContainerProperties().getMessageListener();
         BlockingQueue<ConsumerRecord<Integer, String>> records = new LinkedBlockingQueue<>();
         container.getContainerProperties().setMessageListener(new AcknowledgingConsumerAwareMessageListener<Integer,String>() {
