@@ -10,7 +10,6 @@ spring:
          auto-offset-reset: earliest
          key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
          value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-test:
-  topic: embedded-test-topic
+      topic: my-topic
 server:
    port : 8084

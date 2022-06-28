@@ -3,7 +3,6 @@ package com.gapinc.seri.restservice.controllers;
 import java.util.concurrent.ExecutionException;
 import com.gapinc.seri.restservice.model.BasicTopicMessage;
 import com.gapinc.seri.restservice.service.KafkaProducer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
