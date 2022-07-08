@@ -35,6 +35,13 @@ public class KafkaController {
                 err,
                 HttpStatus.INTERNAL_SERVER_ERROR
             );
+        } catch (Exception e) {
+            String err = String.format("Failed to send message to %s%n SOME OTHER ERROR", topic);
+            logger.error(err + e.getStackTrace());
+            return new ResponseEntity<>(
+                err,
+                HttpStatus.I_AM_A_TEAPOT
+            );
         }
 
         return new ResponseEntity<>(
