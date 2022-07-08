@@ -28,6 +28,7 @@ public class KafkaController {
     public ResponseEntity<?> sendMessageToTopic(@RequestBody BasicTopicMessage message, @PathVariable String topic) throws InterruptedException, ExecutionException{
         try {
             producer.send(topic, message);
+            logger.info("send complete...");
         } catch (InterruptedException | ExecutionException e) {
             String err = String.format("Failed to send message to %s%n", topic);
             logger.error(err + e.getStackTrace());

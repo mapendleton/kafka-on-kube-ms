@@ -23,11 +23,16 @@ public class KafkaConsumer {
     @KafkaListener(topics = "${spring.kafka.topic}", id = "kafkaListener")
     //@SendTo("/topic/consumer")
     public void consume(ConsumerRecord<Integer,String> message){
-        logger.info("attempting to convert and send message : {}",message.value());
-        BasicTopicMessage btp = new BasicTopicMessage(message.key(), message.value());
-        template.convertAndSend("/topic/consumer", message.value());
-        //logger.info("Message consumed on topic: {},Key: {}, Message: {}", message.topic(),message.key(), message.value());
-        logger.info("Message consumed, Key: {}, Message: {}",btp.getId(),btp.getContent());
-        //return new BasicTopicMessage(message.key(), message.value());
+        try {
+            BasicTopicMessage btp = new BasicTopicMessage(message.key(), message.value());
+            template.convertAndSend("/topic/consumer", message.value());
+            //logger.info("Message consumed on topic: {},Key: {}, Message: {}", message.topic(),message.key(), message.value());
+            logger.info("Message consumed, Key: {}, Message: {}",btp.getId(),btp.getContent());
+            //return new BasicTopicMessage(message.key(), message.value());
+        } catch (Exception e) {
+            logger.error("my god IDK what is happening: {}", e.getMessage());
+            throw e;
+        }
+
     }
 }
