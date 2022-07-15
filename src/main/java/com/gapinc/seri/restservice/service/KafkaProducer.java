@@ -25,7 +25,7 @@ public class KafkaProducer {
         final ProducerRecord<Integer,String> record = new ProducerRecord<Integer, String> (topic, message.getId(), message.getContent());
         try {
             ListenableFuture<SendResult<Integer,String>> result = producer.send(record);
-            logger.info("Sending Message: {}",message.getContent());
+            logger.info("Sending Message: {} to: {}",message.getContent(),topic);
             return result.get();
         } catch (InterruptedException | ExecutionException e) {
             //should log
