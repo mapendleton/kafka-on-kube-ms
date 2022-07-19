@@ -20,6 +20,7 @@ dependencies {
 	testImplementation ('org.springframework.boot:spring-boot-starter-test')
 	implementation ('org.springframework.kafka:spring-kafka')
 	testImplementation ('org.springframework.kafka:spring-kafka-test')
+	testImplementation 'org.awaitility:awaitility'
 	implementation ('xml-apis:xml-apis:1.4.01')
 	implementation ('org.springframework.boot:spring-boot-starter-log4j2')
 	implementation 'org.webjars:webjars-locator-core'
@@ -57,5 +58,12 @@ sonarqube {
 		property "sonar.projectName", "kafka-on-kube-ms"
 		property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/jacoco/jacoco.xml"
 		property "sonar.coverage.exclusions", "**/*RestserviceApplication.java"
+	}
+}
+
+test {
+	testLogging {
+		events "failed"
+		exceptionFormat "full"
 	}
 }

@@ -41,7 +41,7 @@ public class KafkaController {
             logger.error(err + e.getStackTrace());
             return new ResponseEntity<>(
                 err,
-                HttpStatus.I_AM_A_TEAPOT
+                HttpStatus.SERVICE_UNAVAILABLE
             );
         }
 
