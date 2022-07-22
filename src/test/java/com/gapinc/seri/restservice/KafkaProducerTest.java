@@ -29,7 +29,6 @@ public class KafkaProducerTest {
 
     String topic = "topic";
     final SendResult<Integer,String> sendResult; 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public KafkaProducerTest(){
         sendResult = new SendResult<>(
