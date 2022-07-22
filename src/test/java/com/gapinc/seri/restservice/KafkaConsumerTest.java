@@ -4,7 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -15,7 +18,7 @@ import com.gapinc.seri.restservice.service.KafkaConsumer;
 @SpringBootTest
 public class KafkaConsumerTest {
 
-    @Mock
+    @InjectMocks
     KafkaConsumer consumer;
 
     @Mock
@@ -23,11 +26,11 @@ public class KafkaConsumerTest {
 
     @Test
     public void consumerShouldTriggerOnPostandSendToWebSocket(){
-        assertNotNull(mockSimpMessagingTemplate);
+        ConsumerRecord<Integer,String> consumerRecord = new ConsumerRecord<Integer,String>("testTopic",0,0,1,"convertAndSend Test");
+        BasicTopicMessage message = new BasicTopicMessage(consumerRecord.key(), consumerRecord.value());
         String path = "/topic/consumer";
-        BasicTopicMessage message = new BasicTopicMessage(1, "convertAndSend Test");
         doNothing().when(mockSimpMessagingTemplate).convertAndSend(path, message);
-        mockSimpMessagingTemplate.convertAndSend(path, message);
+        consumer.consume(consumerRecord);
         verify(mockSimpMessagingTemplate, times(1)).convertAndSend("/topic/consumer", message);
     }
 }
