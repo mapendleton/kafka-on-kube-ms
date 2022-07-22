@@ -1,103 +1,82 @@
 package com.gapinc.seri.restservice;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gapinc.seri.restservice.controllers.KafkaController;
-import com.gapinc.seri.restservice.service.KafkaProducer;
-import com.gapinc.seri.restservice.model.BasicTopicMessage;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.TopicPartition;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
-import org.springframework.kafka.listener.AcknowledgingConsumerAwareMessageListener;
-import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
-import org.springframework.kafka.support.Acknowledgment;
-import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.http.MediaType;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
-@AutoConfigureMockMvc
-@EmbeddedKafka
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gapinc.seri.restservice.model.BasicTopicMessage;
+import com.gapinc.seri.restservice.service.KafkaProducer;
+
+@WebMvcTest
 public class KafkaControllerTest {
-
-    final MockMvc mvc;
-    final ObjectMapper objectMapper;
-    final String topic;
-    final KafkaListenerEndpointRegistry registry;
-    final Logger logger = LoggerFactory.getLogger(this.getClass());
-    final BasicTopicMessage message = new BasicTopicMessage(1, "This is a test.");
-
-    @InjectMocks
-    KafkaController kafkaController;
-
-    @Mock
-    KafkaProducer kafkaProducer;
+    
+    private final MockMvc mvc;
+    private final ObjectMapper objectMapper;
+    private final String topic = "test-topic";
+    private final String body = "{\"id\": 1, \"content\": \"this will not be the return message\"}";
+    static final BasicTopicMessage message = new BasicTopicMessage(1, "This is a KafkaController test.");
+    private final SendResult<Integer,String> sendResult; 
+    
+    @MockBean
+    private KafkaProducer mockProducer;
 
     @Autowired
-    public KafkaControllerTest(MockMvc mvc,ObjectMapper objectMapper,KafkaListenerEndpointRegistry registry, @Value("${spring.kafka.topic}") String topic){
+    public KafkaControllerTest(MockMvc mvc, ObjectMapper objectMapper){
         this.mvc = mvc;
         this.objectMapper = objectMapper;
-        this.topic = topic;
-        this.registry = registry;
+        sendResult = new SendResult<>(
+            new ProducerRecord<Integer,String>(topic, message.getId(), message.getContent()),
+            new RecordMetadata(new TopicPartition(topic, 0), 0, 0, 0, 0, 0)
+            );
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void testProduce_Consume() throws Exception {
-        ConcurrentMessageListenerContainer<Integer, String> container = (ConcurrentMessageListenerContainer<Integer, String>) registry.getListenerContainer("kafkaListener");
-        container.stop();
-        AcknowledgingConsumerAwareMessageListener<Integer,String> messageListener = (AcknowledgingConsumerAwareMessageListener<Integer, String>) container.getContainerProperties().getMessageListener();
-        BlockingQueue<ConsumerRecord<Integer, String>> records = new LinkedBlockingQueue<>();
-        container.getContainerProperties().setMessageListener(new AcknowledgingConsumerAwareMessageListener<Integer,String>() {
-            @Override
-            public void onMessage(ConsumerRecord<Integer,String> data, Acknowledgment ack, Consumer<?,?> consumer) {
-                messageListener.onMessage(data,ack,consumer);
-                records.add(data);
-            }
-        });            
-        container.start();
+    public void postShouldReturnOk() throws JsonProcessingException, Exception{
+
+            
+        objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+        when(mockProducer.send(topic, message)).thenReturn(sendResult);
 
         mvc.perform(MockMvcRequestBuilders.post("/topics/{topic}", topic)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaTypes.HAL_JSON)
-            .content(objectMapper.writeValueAsString(message)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.content").value("This is a test."));
-
-        ConsumerRecord<Integer,String> consumedMessage = records.poll(500, TimeUnit.MILLISECONDS);
-        assertNotNull(consumedMessage);
-        assertEquals(1, consumedMessage.key());
-        assertEquals("This is a test.", consumedMessage.value());
-        container.stop();
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaTypes.HAL_JSON)
+        .content(body))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.producerRecord.value").value("This is a KafkaController test."));
     }
 
     @Test
-    public void testProduceFailure() throws JsonProcessingException, Exception {
-        when(kafkaProducer.send(topic, message)).thenThrow(new InterruptedException("Test Exception"));
-        ResponseEntity<?> response = kafkaController.sendMessageToTopic(message, topic);
+    public void interruptedExceptionShouldSentServerError() throws JsonProcessingException, Exception {
+        when(mockProducer.send(topic, message)).thenThrow(new InterruptedException("Test Exception"));
+        mvc.perform(MockMvcRequestBuilders.post("/topics/{topic}", topic)
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaTypes.HAL_JSON)
+        .content(body))
+            .andExpect(status().isInternalServerError());
+    }
 
-        logger.info("actual: " + response.getStatusCode().name());
-        logger.info("\nexpected: " + HttpStatus.INTERNAL_SERVER_ERROR);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    @Test
+    public void genericExceptionShouldReturnServiceUnavailable() throws JsonProcessingException, Exception {
+        when(mockProducer.send(topic, message)).thenThrow(new RuntimeException());
+        mvc.perform(MockMvcRequestBuilders.post("/topics/{topic}", topic)
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaTypes.HAL_JSON)
+        .content(body))
+            .andExpect(status().isServiceUnavailable());
     }
 }

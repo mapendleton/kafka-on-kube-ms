@@ -1,6 +1,8 @@
 package com.gapinc.seri.restservice.service;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 import com.gapinc.seri.restservice.model.BasicTopicMessage;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
@@ -9,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
-import org.springframework.util.concurrent.ListenableFuture;
 
 @Service
 public class KafkaProducer {
@@ -24,7 +25,7 @@ public class KafkaProducer {
     public SendResult<Integer,String> send(String topic, BasicTopicMessage message) throws InterruptedException, ExecutionException {
         final ProducerRecord<Integer,String> record = new ProducerRecord<Integer, String> (topic, message.getId(), message.getContent());
         try {
-            ListenableFuture<SendResult<Integer,String>> result = producer.send(record);
+            Future<SendResult<Integer,String>> result = producer.send(record);
             logger.info("Sending Message: {} to: {}",message.getContent(),topic);
             return result.get();
         } catch (InterruptedException | ExecutionException e) {

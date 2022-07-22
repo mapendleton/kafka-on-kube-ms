@@ -11,5 +11,7 @@ spring:
          key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
          value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       topic: my-topic
+web-socket:
+   destination: /topic/consumer
 server:
    port : 8084
