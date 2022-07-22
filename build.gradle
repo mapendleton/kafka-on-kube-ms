@@ -16,11 +16,18 @@ repositories {
 
 dependencies {
 	implementation ('org.springframework.boot:spring-boot-starter-hateoas')
+	implementation ('org.springframework.boot:spring-boot-starter-websocket')
 	testImplementation ('org.springframework.boot:spring-boot-starter-test')
 	implementation ('org.springframework.kafka:spring-kafka')
 	testImplementation ('org.springframework.kafka:spring-kafka-test')
+	testImplementation 'org.awaitility:awaitility'
 	implementation ('xml-apis:xml-apis:1.4.01')
 	implementation ('org.springframework.boot:spring-boot-starter-log4j2')
+	implementation 'org.webjars:webjars-locator-core'
+	implementation 'org.webjars:sockjs-client:1.0.2'
+	implementation 'org.webjars:stomp-websocket:2.3.3'
+	implementation 'org.webjars:bootstrap:3.3.7'
+	implementation 'org.webjars:jquery:3.1.1-1'
 }
 
 configurations {
@@ -51,5 +58,12 @@ sonarqube {
 		property "sonar.projectName", "kafka-on-kube-ms"
 		property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/jacoco/jacoco.xml"
 		property "sonar.coverage.exclusions", "**/*RestserviceApplication.java"
+	}
+}
+
+test {
+	testLogging {
+		events "failed"
+		exceptionFormat "full"
 	}
 }

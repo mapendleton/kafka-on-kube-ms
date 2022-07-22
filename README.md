@@ -45,6 +45,17 @@ You can also access kafka utilizing the kafka binary scripts by using --bootstra
 ```bash
 ./gradlew test #tests do not rely on an active Kafka cluster
 ```
+## Consumer (KafkaListener/Web-Socket)
+The listener is set up to listen to the default 'my-topic' topic. Meaning whenever a message is produced to that topic, the listener will log the message received and send it to a web-socket endpoint.
+/topic/consumer
+
+Apps like https://github.gapinc.com/services-integration/kafka-on-kube-react-app
+can subscribe to the web-socket (using stomp and SockJs) to then read those messages
+```
+session.subscribe("/topic/consumer")
+```
+**NOTICE**
+When running locally with ./gradlew bootRun, you'll notice in the logs when the app starts up, if a topic partition has been assigned for the default topic 'my-topic'. If a partion has not been assigned ie. shows up as '[]' empty. Then the listener will not pick up any messages. 
 # REST API
 Use another terminal and run curl requests at http://localhost:8084
 ## Post to Topic
