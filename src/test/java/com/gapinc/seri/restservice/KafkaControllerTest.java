@@ -57,7 +57,7 @@ public class KafkaControllerTest {
         .accept(MediaTypes.HAL_JSON)
         .content(body))
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.producerRecord.value").value("This is a KafkaController test."));
+            .andExpect(jsonPath("$.value").value("This is a KafkaController test."));
     }
 
     @Test

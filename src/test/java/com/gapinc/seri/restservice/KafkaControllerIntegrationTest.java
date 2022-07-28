@@ -107,9 +107,9 @@ public class KafkaControllerIntegrationTest {
             .accept(MediaTypes.HAL_JSON)
             .content(objectMapper.writeValueAsString(message)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.producerRecord.value").value("mvcTest"))
+                .andExpect(jsonPath("$.value").value("mvcTest"))
                 .andReturn();
-
+        
         //poll the listener blocking queue which indicates the listener was called
         ConsumerRecord<Integer,String> consumedMessage = records.poll(500, TimeUnit.MILLISECONDS);
         assertNotNull(consumedMessage);

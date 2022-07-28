@@ -29,7 +29,6 @@ public class KafkaProducer {
             logger.info("Sending Message: {} to: {}",message.getContent(),topic);
             return result.get();
         } catch (InterruptedException | ExecutionException e) {
-            //should log
             logger.error("Attempted to send message : key=%s, message=%s%n", message.getId(), message.getContent());
             logger.error(e.getMessage());
             throw e;
