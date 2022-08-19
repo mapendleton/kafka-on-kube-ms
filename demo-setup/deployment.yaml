@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-ms
+  namespace: kube-demo-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: kafka-ms
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        name: kafka-ms
+    spec:
+      containers:
+        - image: gacr2nsandbox.azurecr.io/gap/services-integration/kafka-ms:dev
+          imagePullPolicy: Always
+          name: kafka-ms
+          securityContext:
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: web-serv-tmp
+              mountPath: /tmp
+          ports:
+            - containerPort: 8084
+              name: kafkaservport
+      volumes:
+        - name: web-serv-tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-ms
+  namespace: kube-demo-test
+spec:
+  type: NodePort
+  selector:
+    name: kafka-ms
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8084
+      targetPort: kafkaservport
